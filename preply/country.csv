@@ -1,0 +1,278 @@
+country_id,country_name,timezone
+CI,Côte d'Ivoire,Africa/Abidjan
+GH,Ghana,Africa/Accra
+ET,Ethiopia,Africa/Addis_Ababa
+DZ,Algeria,Africa/Algiers
+MW,Malawi,Africa/Blantyre
+CG,Congo-Brazzaville,Africa/Brazzaville
+BI,Burundi,Africa/Bujumbura
+EG,Egypt,Africa/Cairo
+MA,Morocco,Africa/Casablanca
+ES,Spain,Africa/Ceuta
+GN,Guinea,Africa/Conakry
+SN,Senegal,Africa/Dakar
+TZ,Tanzania,Africa/Dar_es_Salaam
+CM,Cameroon,Africa/Douala
+SL,Sierra Leone,Africa/Freetown
+BW,Botswana,Africa/Gaborone
+ZW,Zimbabwe,Africa/Harare
+ZA,South Africa,Africa/Johannesburg
+SS,South Sudan,Africa/Juba
+UG,Uganda,Africa/Kampala
+SD,Sudan,Africa/Khartoum
+RW,Rwanda,Africa/Kigali
+NG,Nigeria,Africa/Lagos
+GA,Gabon,Africa/Libreville
+TG,Togo,Africa/Lome
+AO,Angola,Africa/Luanda
+ZM,Zambia,Africa/Lusaka
+MZ,Mozambique,Africa/Maputo
+LS,Lesotho,Africa/Maseru
+SZ,Eswatini,Africa/Mbabane
+KE,Kenya,Africa/Nairobi
+BJ,Benin,Africa/Porto-Novo
+LY,Libya,Africa/Tripoli
+TN,Tunisia,Africa/Tunis
+NA,Namibia,Africa/Windhoek
+US,United States,America/Adak
+AG,Antigua and Barbuda,America/Antigua
+AR,Argentina,America/Argentina/Buenos_Aires
+AR,Argentina,America/Argentina/Catamarca
+AR,Argentina,America/Argentina/ComodRivadavia
+AR,Argentina,America/Argentina/Cordoba
+AR,Argentina,America/Argentina/Mendoza
+AR,Argentina,America/Argentina/Salta
+AR,Argentina,America/Argentina/Ushuaia
+PY,Paraguay,America/Asuncion
+BR,Brazil,America/Bahia
+MX,Mexico,America/Bahia_Banderas
+BB,Barbados,America/Barbados
+PS,Palestinian Territory,America/Belem
+BZ,Belize,America/Belize
+CO,Colombia,America/Bogota
+US,United States,America/Boise
+BR,Brazil,America/Campo_Grande
+MX,Mexico,America/Cancun
+VE,Venezuela,America/Caracas
+US,United States,America/Cayman
+US,United States,America/Chicago
+MX,Mexico,America/Chihuahua
+CR,Costa Rica,America/Costa_Rica
+US,United States,America/Denver
+US,United States,America/Detroit
+CA,Canada,America/Edmonton
+SV,El Salvador,America/El_Salvador
+BR,Brazil,America/Fortaleza
+GD,Grenada,America/Grenada
+FR,France,America/Guadeloupe
+GT,Guatemala,America/Guatemala
+EC,Ecuador,America/Guayaquil
+GY,Guyana,America/Guyana
+CA,Canada,America/Halifax
+CU,Cuba,America/Havana
+MX,Mexico,America/Hermosillo
+US,United States,America/Indiana/Indianapolis
+US,United States,America/Indiana/Knox
+RU,Russia,America/Indiana/Petersburg
+JM,Jamaica,America/Jamaica
+US,United States,America/Kentucky/Louisville
+FR,France,America/Kentucky/Monticello
+BO,Bolivia,America/La_Paz
+PE,Peru,America/Lima
+US,United States,America/Los_Angeles
+BR,Brazil,America/Maceio
+NI,Nicaragua,America/Managua
+BR,Brazil,America/Manaus
+MX,Mexico,America/Mazatlan
+MX,Spain,America/Merida
+MX,Mexico,America/Mexico_City
+CA,Canada,America/Moncton
+MX,Mexico,America/Monterrey
+UY,Uruguay,America/Montevideo
+CA,Canada,America/Montreal
+US,United States,America/New_York
+BR,Brazil,America/Noronha
+US,United States,America/North_Dakota/New_Salem
+PA,Panama,America/Panama
+US,United States,America/Phoenix
+TT,Trinidad and Tobago,America/Port_of_Spain
+US,United States,America/Puerto_Rico
+BR,Brazil,America/Recife
+CA,Canada,America/Regina
+AR,Argentina,America/Rosario
+DO,Dominican Republic,America/Santo_Domingo
+BR,Brazil,America/Sao_Paulo
+US,United States,America/St_Johns
+LC,Saint Lucia,America/St_Lucia
+FR,France,America/St_Thomas
+IT,Italy,America/St_Vincent
+CA,Canada,America/Swift_Current
+HN,Honduras,America/Tegucigalpa
+MX,Mexico,America/Tijuana
+CA,Canada,America/Toronto
+CA,Canada,America/Vancouver
+CA,Canada,America/Winnipeg
+YE,Yemen,Asia/Aden
+KZ,Kazakhstan,Asia/Almaty
+JO,Jordan,Asia/Amman
+KZ,Kazakhstan,Asia/Aqtobe
+IQ,Iraq,Asia/Baghdad
+BH,Bahrain,Asia/Bahrain
+AZ,Azerbaijan,Asia/Baku
+TH,Thailand,Asia/Bangkok
+LB,Lebanon,Asia/Beirut
+KG,Kyrgyzstan,Asia/Bishkek
+BN,Brunei,Asia/Brunei
+MN,Mongolia,Asia/Choibalsan
+CN,China,Asia/Chongqing
+LK,Sri Lanka,Asia/Colombo
+SY,Syria,Asia/Damascus
+BD,Bangladesh,Asia/Dhaka
+AE,United Arab Emirates,Asia/Dubai
+TJ,Tajikistan,Asia/Dushanbe
+CY,Cyprus,Asia/Famagusta
+VN,Vietnam,Asia/Ho_Chi_Minh
+CN,China,Asia/Hong_Kong
+RU,Russia,Asia/Irkutsk
+TR,Turkey,Asia/Istanbul
+ID,Indonesia,Asia/Jakarta
+ID,Indonesia,Asia/Jayapura
+IL,Israel,Asia/Jerusalem
+AF,Afghanistan,Asia/Kabul
+PK,Pakistan,Asia/Karachi
+NP,Nepal,Asia/Kathmandu
+IN,India,Asia/Kolkata
+MY,Malaysia,Asia/Kuala_Lumpur
+MY,Malaysia,Asia/Kuching
+KW,Kuwait,Asia/Kuwait
+CN,China,Asia/Macau
+ID,Indonesia,Asia/Makassar
+PH,Philippines,Asia/Manila
+OM,Oman,Asia/Muscat
+CY,Cyprus,Asia/Nicosia
+KH,Cambodia,Asia/Phnom_Penh
+QA,Qatar,Asia/Qatar
+SA,Saudi Arabia,Asia/Riyadh
+KR,South Korea,Asia/Seoul
+CN,China,Asia/Shanghai
+SG,Singapore,Asia/Singapore
+TW,Taiwan,Asia/Taipei
+UZ,Uzbekistan,Asia/Tashkent
+GE,Georgia,Asia/Tbilisi
+IR,Iran,Asia/Tehran
+IL,Israel,Asia/Tel_Aviv
+JP,Japan,Asia/Tokyo
+RU,Russia,Asia/Tomsk
+LA,Laos,Asia/Vientiane
+MM,Myanmar,Asia/Yangon
+RU,Russia,Asia/Yekaterinburg
+AM,Armenia,Asia/Yerevan
+BM,Bermuda,Atlantic/Bermuda
+EG,Egypt,Atlantic/Canary
+PT,Portugal,Atlantic/Madeira
+IS,Iceland,Atlantic/Reykjavik
+AU,Australia,Australia/Adelaide
+AU,Australia,Australia/Brisbane
+AU,Australia,Australia/Hobart
+AU,Australia,Australia/Melbourne
+AU,Australia,Australia/Perth
+AU,Australia,Australia/Sydney
+NL,Netherlands,Europe/Amsterdam
+AD,Andorra,Europe/Andorra
+GR,Greece,Europe/Athens
+GB,United Kingdom,Europe/Belfast
+RS,Serbia,Europe/Belgrade
+DE,Germany,Europe/Berlin
+SK,Slovakia,Europe/Bratislava
+BE,Belgium,Europe/Brussels
+RO,Romania,Europe/Bucharest
+HU,Hungary,Europe/Budapest
+MD,Moldova,Europe/Chisinau
+DK,Denmark,Europe/Copenhagen
+IE,Ireland,Europe/Dublin
+GI,Gibraltar,Europe/Gibraltar
+GG,Guernsey,Europe/Guernsey
+FI,Finland,Europe/Helsinki
+IM,Isle of Man,Europe/Isle_of_Man
+TR,Turkey,Europe/Istanbul
+JE,Jersey,Europe/Jersey
+RU,Russia,Europe/Kaliningrad
+UA,Ukraine,Europe/Kiev
+PT,Portugal,Europe/Lisbon
+SI,Slovenia,Europe/Ljubljana
+GB,United Kingdom,Europe/London
+LU,Luxembourg,Europe/Luxembourg
+ES,Spain,Europe/Madrid
+MT,Malta,Europe/Malta
+BY,Belarus,Europe/Minsk
+RU,Russia,Europe/Moscow
+CY,Cyprus,Europe/Nicosia
+NO,Norway,Europe/Oslo
+FR,France,Europe/Paris
+ME,Montenegro,Europe/Podgorica
+CZ,Czechia,Europe/Prague
+LV,Latvia,Europe/Riga
+IT,Italy,Europe/Rome
+RU,Russia,Europe/Samara
+SM,San Marino,Europe/San_Marino
+BA,Bosnia and Herzegovina,Europe/Sarajevo
+UA,Ukraine,Europe/Simferopol
+MK,North Macedonia,Europe/Skopje
+BG,Bulgaria,Europe/Sofia
+SE,Sweden,Europe/Stockholm
+EE,Estonia,Europe/Tallinn
+AL,Albania,Europe/Tirane
+RU,Russia,Europe/Ulyanovsk
+UA,Ukraine,Europe/Uzhgorod
+AT,Austria,Europe/Vienna
+LT,Lithuania,Europe/Vilnius
+PL,Poland,Europe/Warsaw
+HR,Croatia,Europe/Zagreb
+UA,Ukraine,Europe/Zaporozhye
+CH,Switzerland,Europe/Zurich
+MG,Madagascar,Indian/Antananarivo
+FR,France,Indian/Kerguelen
+MV,Maldives,Indian/Maldives
+MU,Mauritius,Indian/Mauritius
+NZ,New Zealand,Pacific/Auckland
+US,United States,Pacific/Easter
+US,United States,Pacific/Honolulu
+FR,France,Pacific/Marquesas
+FR,France,Pacific/Noumea
+MN,Mongolia,Asia/Ulaanbaatar
+PT,Portugal,Atlantic/Azores
+CA,Canada,America/Dawson_Creek
+US,United States,America/North_Dakota/Beulah
+RU,Russia,Europe/Volgograd
+RU,Russia,Asia/Barnaul
+US,United States,Pacific/Guam
+TM,Turkmenistan,Asia/Ashgabat
+IN,India,Indian/Mahe
+TC,Turks and Caicos Islands,America/Grand_Turk
+BS,The Bahamas,America/Nassau
+ML,Mali,Africa/Bamako
+CF,Central African Republic,Africa/Bangui
+CA,Canada,America/Whitehorse
+CA,Canada,America/Resolute
+NL,Netherlands,America/Curacao
+MD,Moldova,Europe/Tiraspol
+BR,Brazil,America/Rio_Branco
+KZ,Kazakhstan,Asia/Qyzylorda
+ER,Eritrea,Africa/Asmara
+BR,Brazil,America/Eirunepe
+FJ,Fiji,Pacific/Fiji
+US,United States,America/Anchorage
+PS,Palestinian Territory,Asia/Hebron
+PW,Palau,Pacific/Palau
+CA,Canada,America/Atikokan
+US,United States,America/North_Dakota/Center
+HT,Haiti,America/Port-au-Prince
+VA,Vatican City,Europe/Vatican
+RU,Russia,Asia/Omsk
+BR,Brazil,America/Araguaina
+CA,Canada,America/Thunder_Bay
+US,United States,Indian/Christmas
+CL,Chile,America/Santiago
+BR,Brazil,America/Cuiaba
+MX,Mexico,America/Ojinaga
+AU,Australia,Australia/Lord_Howe
