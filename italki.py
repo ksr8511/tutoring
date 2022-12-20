@@ -164,6 +164,8 @@ class Italki:
                     urlkeywordarray = self.__class__.__get_urlkeywordarray(entry[0])
                     log.extend([[urlkeyword, 'keyword', False] for urlkeyword in urlkeywordarray])
                     
+            entry[2] = True
+                    
             while True:
                 try:
                     with open(self.__get_tecdictorgfile(), 'w') as f:
@@ -184,7 +186,7 @@ class Italki:
                     from time import sleep
                     sleep(60)
                 
-            entry[2] = True
+            """entry[2] = True"""
             
         tecdict = dict()
         for k in tecorgdict.keys():

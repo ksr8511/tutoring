@@ -97,32 +97,44 @@ class Preply:
 
     @classmethod
     def __json_tutorsdicttmp(cls, url):
-        while True:
-            try:
-                import requests
-                response = requests.get(url)
-                break
-            except Exception as err:
-                print(err)
-                from time import sleep
-                sleep(60)
-                
         tutorsdicttmp = dict()
-        if response.status_code == 200:
-            from bs4 import BeautifulSoup
-            html = response.text
-            soup = BeautifulSoup(html, 'html.parser')
+        
+        for i in range(10):
+            while True:
+                try:
+                    import requests
+                    response = requests.get(url)
+                    break
+                except Exception as err:
+                    print(err)
+                    from time import sleep
+                    sleep(60)
+                    
+            if response.status_code == 200:
+                from bs4 import BeautifulSoup
+                html = response.text
+                soup = BeautifulSoup(html, 'html.parser')
 
-            import json
-            soupjson = soup.find('script', id='__NEXT_DATA__', type='application/json')
-            tutorsjson = json.loads(soupjson.string)['props']['pageProps']['ssrAllTutors']['tutors']
-            for tutor in tutorsjson:
-                tutorsdicttmp[tutor['id']] = tutor
-        else:
-            print(response.status_code, url)
-
+                import json
+                soupjson = soup.find('script', id='__NEXT_DATA__', type='application/json')
+                tutorsjson = json.loads(soupjson.string)['props']['pageProps']['ssrAllTutors']['tutors']
+                
+                for tutor in tutorsjson:
+                    tutorsdicttmp[tutor['id']] = tutor
+                    
+                break
+                
+            if i == (10-1):
+                print(response.status_code, url)
+                break
+                
+            else:
+                from time import sleep
+                sleep(1)
+                continue
+                
         return tutorsdicttmp
-
+        
     def collect(self, pagenumber, reload=False):
         if reload:
             self.tutorsorgdict = dict()
@@ -132,10 +144,8 @@ class Preply:
         for url in urliter:
             from time import sleep
             sleep(1)
-
+            
             tutorsorgdicttmp = self.__class__.__json_tutorsdicttmp(url)
-            if len(tutorsorgdicttmp) <= 0:
-                break
             self.tutorsorgdict.update(tutorsorgdicttmp)
 
         import json
@@ -161,7 +171,6 @@ class Preply:
         tznameset = set()
         for tutor in self.tutorsdict.keys():
             try:
-                """tznameset.add(self.tutorsdict[tutor]['user']['profile']['timezone']['tzname'])"""
                 tznameset.add(self.tutorsdict[tutor]['tzname'])
             except KeyError as e:
                 print(e)
@@ -238,7 +247,6 @@ class Preply:
         return urlarray
                 
     def get_tzname(self, tutor):
-        """return self.tutorsdict[tutor]['user']['profile']['timezone']['tzname']"""
         return self.tutorsdict[tutor]['tzname']
         
 def __get_alpha_2(countryname):
@@ -291,8 +299,7 @@ def prfunc():
     """from preply import Preply"""
     
     """"""
-    langarray = [['english', 1200], ['japanese', 100], ['spanish', 500]]
-    """langarray = [['english', 1200], ['japanese', 100]]"""
+    langarray = [['english', 1300], ['japanese', 100], ['spanish', 500]]
     """langarray = [['spanish', 500]]"""
     for lang in langarray:
         pr = Preply(lang[0])
