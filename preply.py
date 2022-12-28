@@ -148,7 +148,8 @@ class Preply:
         import csv
 
         countrydict = {'countryname': dict(), 'timezone': dict()}
-        with open(self.fileindex.__class__.get_countrypath(), 'r') as f:
+        """with open(self.fileindex.__class__.get_countrypath(), 'r') as f:"""
+        with open(cls.FileIndex.get_countrypath(), 'r') as f:
             reader = list(csv.reader(f))
             for i in range(len(reader)):
                 if i == 0:
