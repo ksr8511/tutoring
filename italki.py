@@ -266,6 +266,7 @@ class Italki:
                 
         return True
 
+    """
     def get_urlarray(self, conarray, unseen=False):
         urlarray = list()
         
@@ -274,7 +275,7 @@ class Italki:
                 tecdict = dict()
                 for t2 in range(100):
                     try:
-                        with open(self.__get_tecdictfile(), 'r') as f:
+                        with open(self.fileindex.get_tecdictfile(), 'r') as f:
                             tecdict = json.load(f)
                         break
                     except Exception as err:
@@ -282,6 +283,38 @@ class Italki:
                         import time
                         time.sleep(1)
                         tecdict = dict()
+                    
+                history = list()
+                with open('history.txt', 'r') as f:
+                    while True:
+                        line = f.readline()
+                        if len(line) <= 0:
+                            break
+                        history.append(line.strip().split(' ')[-1])
+                        
+                for k in tecdict.keys():
+                    if self.__class__.__check(tecdict[k], conarray) == True:
+                        url = 'https://www.italki.com/teacher/'+str(k)+'/'
+                        if unseen == True and url in history:
+                            continue
+                        urlarray.append(url)
+                break
+            except Exception as err:
+                print(err)
+                import time
+                time.sleep(1)
+                urlarray = list()
+                
+        return urlarray
+    """
+    def get_urlarray(self, conarray, unseen=False):
+        urlarray = list()
+        for t in range(100):
+            try:
+                tecdict = None
+                with open(self.fileindex.get_tecdictfile(), 'r') as f:
+                    import json
+                    tecdict = json.load(f)
                     
                 history = list()
                 with open('history.txt', 'r') as f:

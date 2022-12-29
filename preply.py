@@ -231,11 +231,18 @@ class Preply:
                     else:
                         urlarray.append(url)
                 break
+            except Exception as err:
+                print(err)
+                import time
+                time.sleep(1)
+                urlarray = list()
+            """
             except ValueError as err:
                 print(err)
                 import time
                 time.sleep(1)
                 urlarray = list()
+            """
 
         return urlarray
         
