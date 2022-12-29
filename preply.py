@@ -1,7 +1,7 @@
 class Preply:
     class FileIndex:
-        def __init__(self, lang):
-            self.lang = lang
+        def __init__(self, language):
+            self.language = language
 
         @classmethod
         def __get_path(cls, f):
@@ -9,10 +9,10 @@ class Preply:
             return join('.', 'preply', f)
 
         def get_jsonorgpath(self):
-            return self.__class__.__get_path('preply_'+self.lang+'org.json')
+            return self.__class__.__get_path('preply_'+self.language[0:2]+'org.json')
 
         def get_jsonpath(self):
-            return self.__class__.__get_path('preply_'+self.lang+'.json')
+            return self.__class__.__get_path('preply_'+self.language[0:2]+'.json')
 
         @classmethod
         def get_countrypath(cls):
@@ -28,7 +28,7 @@ class Preply:
         self.fileindex = self.__class__.FileIndex(self.language[0:2])
         
     @classmethod
-    def __load_tutorsdict(cls, jsonpath):
+    def load_tutorsdict(cls, jsonpath):
         tutorsdict = dict()
 
         import os.path
@@ -53,12 +53,27 @@ class Preply:
             if i >= 2:
                 url += '?page='+str(i)
             yield url
+            
+    @classmethod
+    def __loopfunc(t, func, *args, **kwargs):
+        y = None
+        while True:
+            try:
+                y = func(*args, **kwargs)
+                break
+            except Exception as err:
+                print(err)
+                from time import sleep
+                sleep(t)
+                
+        return y
 
     @classmethod
     def __json_tutorsdicttmp(cls, url):
         tutorsdicttmp = dict()
 
         for i in range(10):
+            """
             while True:
                 try:
                     import requests
@@ -68,6 +83,8 @@ class Preply:
                     print(err)
                     from time import sleep
                     sleep(60)
+            """
+            response = cls.__loopfunc(60, requests.get, url)
 
             if response.status_code == 200:
                 from bs4 import BeautifulSoup
@@ -93,18 +110,11 @@ class Preply:
                 continue
 
         return tutorsdicttmp
-
-    """def collect(self, pagenumber, reload=False):"""
-    def collect(self, pagenumber):
-        tutorsorgdict = self.__class__.__load_tutorsdict(self.fileindex.get_jsonorgpath())
-        tutorsdict = self.__class__.__load_tutorsdict(self.fileindex.get_jsonpath())
         
-        """
-        if reload:
-            tutorsorgdict = dict()
-            tutorsdict = dict()
-        """
-
+    def collect(self, pagenumber):
+        tutorsorgdict = self.__class__.load_tutorsdict(self.fileindex.get_jsonorgpath())
+        tutorsdict = self.__class__.load_tutorsdict(self.fileindex.get_jsonpath())
+        
         urliter = self.__get_urliter(pagenumber)
         for url in urliter:
             from time import sleep
@@ -115,7 +125,6 @@ class Preply:
 
         import json
 
-        """with open(self.fileindex.get_jsonpath(), 'w') as f:"""
         with open(self.fileindex.get_jsonorgpath(), 'w') as f:
             json.dump(tutorsorgdict, f)
 
@@ -148,7 +157,6 @@ class Preply:
         import csv
 
         countrydict = {'countryname': dict(), 'timezone': dict()}
-        """with open(self.fileindex.__class__.get_countrypath(), 'r') as f:"""
         with open(cls.FileIndex.get_countrypath(), 'r') as f:
             reader = list(csv.reader(f))
             for i in range(len(reader)):
@@ -179,7 +187,7 @@ class Preply:
                 for x in con[1]:
                     conarray.append([con[0], x, con[2]])
 
-        tutorsdict = self.__class__.__load_tutorsdict(self.fileindex.get_jsonpath())
+        tutorsdict = self.__class__.load_tutorsdict(self.fileindex.get_jsonpath())
         countrydict = self.__class__.__get_countrydict()
 
         urlarray = list()
@@ -209,7 +217,6 @@ class Preply:
                         tutorarray.append(tutor)
 
                 history = list()
-                """with open('history.txt', 'r') as f:"""
                 with open(self.fileindex.__class__.get_historypath(), 'r') as f:
                     while True:
                         line = f.readline()
@@ -231,23 +238,7 @@ class Preply:
                 urlarray = list()
 
         return urlarray
-
-    def get_tzname(self, tutor):
-        tutorsdict = self.__class__.__load_tutorsdict(self.fileindex.get_jsonpath())
-        return tutorsdict[tutor]['tzname']
-
-    def get_tznameset(self):
-        tutorsdict = self.__class__.__load_tutorsdict(self.fileindex.get_jsonpath())
-
-        tznameset = set()
-        for tutor in tutorsdict.keys():
-            try:
-                tznameset.add(tutorsdict[tutor]['tzname'])
-            except KeyError as e:
-                print(e)
-
-        return tznameset
-
+        
 def __get_alpha_2(countryname):
     import pycountry
 
@@ -273,8 +264,13 @@ def __print_country(tzname):
 
 def find_notexisting():
     tznameset = set()
-    for p in [Preply('english'), Preply('japanese'), Preply('russian')]:
-        tznameset = tznameset.union(p.get_tznameset())
+    for p in [Preply('english'), Preply('japanese'), Preply('spanish')]:
+        tutorsdict = p.__class__.load_tutorsdict(p.fileindex.get_jsonpath())
+        for tutor in tutorsdict.keys():
+            try:
+                tznameset.add(tutorsdict[tutor]['tzname'])
+            except KeyError as e:
+                print(e)
 
     import csv
     tznameexisting = list()
@@ -293,13 +289,19 @@ def find_notexisting():
             if tzname.startswith('Etc/'):
                 continue
             __print_country(tzname)
-
-def prfunc():
-    """from preply import Preply"""
+            
+def get_tzname(tutor):
+    tzname = None
+    for p in [Preply('english'), Preply('japanese'), Preply('spanish')]:
+        tutorsdict = p.__class__.load_tutorsdict(p.fileindex.get_jsonpath())
+        if tutor in tutorsdict.keys() and 'tzname' in tutorsdict[tutor].keys():
+            tzname = tutorsdict[tutor]['tzname']
+            break
+            
+    return tzname
     
-    """"""
+def prfunc():
     langarray = [['english', 1300], ['japanese', 100], ['spanish', 500]]
-    """langarray = [['spanish', 500]]"""
     for lang in langarray:
         pr = Preply(lang[0])
         pr.collect(lang[1])
@@ -307,43 +309,13 @@ def prfunc():
         from git_push import git_push
         git_push([pr.fileindex.get_jsonpath()])
         
+if __name__ == '__main__':
     """
-    from os.path import join
-    parray = list()
-    for lang in ['en', 'ja', 'sp']:
-        parray.append(join('.', 'preply', 'preply_'+lang+'.json'))
-    git_push(parray)
+    from history import arrange
+    
+    prfunc()
+    find_notexisting()
+    print(get_tzname('2720881'))
+    arrange()
     """
     
-    print('Hello, prfunc!')
-
-if __name__ == '__main__':
-    """"""
-
-"""
-xxxarray = list()
-with open('history.txt', 'r') as f:
-    while True:
-        line = f.readline()
-        if len(line) <= 0:
-            break
-        xxxarray.append(line.strip().split(' ')[0]+' '+line.strip().split(' ')[-1].replace('/english','/').replace('/japanese','/').replace('/russian','/'))
-
-with open('history.txt.txt', 'w') as f:
-    for xxx in xxxarray:
-        if xxx[-1] == '/':
-            f.write(xxx+'\n')
-        else:
-            f.write(xxx+'/'+'\n')
-"""
-"""
-with open('history.txt', 'r') as f:
-    while True:
-        line = f.readline()
-        if len(line) <= 0:
-            break
-        url = line.strip().split(' ')[-1]
-        url = url[:-1] if url[-1] == '/' else url
-        if 'italki' in url:
-            print(url.split('/')[-1])
-"""

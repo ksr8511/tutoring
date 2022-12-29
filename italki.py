@@ -1,12 +1,43 @@
-import json
-import pickle
-
 class Italki:
+    class FileIndex:
+        def __init__(self, language):
+            self.language = language
+            
+        @classmethod
+        def __get_file(cls, f):
+            from os.path import join
+            return join('.', 'italki', f)
+            
+        def get_tecdictorgfile(self):
+            return self.__class__.__get_file('italki_'+self.language[0:2]+'org.json')
+            
+        def get_tecdictfile(self):
+            return self.__class__.__get_file('italki_'+self.language[0:2]+'.json')
+            
+        def get_logfile(self):
+            return self.__class__.__get_file('log.'+self.language[0:2]+'.pickle')
+            
     def __init__(self, language):
         self.language = language
+        self.fileindex = self.__class__.FileIndex(self.language[0:2])
         
     @classmethod
-    def __get_tmptecdict(cls, url):
+    def __loopfunc(t, func, *args, **kwargs):
+        y = None
+        while True:
+            try:
+                y = func(*args, **kwargs)
+                break
+            except Exception as err:
+                print(err)
+                from time import sleep
+                sleep(t)
+                
+        return y
+        
+    @classmethod
+    def __get_tecdicttmp(cls, url):
+        """
         response = None
         while True:
             try:
@@ -17,6 +48,8 @@ class Italki:
                 print(err)
                 from time import sleep
                 sleep(60)
+        """
+        response = cls.__loopfunc(60, requests.get, url)
                 
         if response.status_code == 200:
             from bs4 import BeautifulSoup
@@ -105,31 +138,20 @@ class Italki:
             
         return keywordarray
         
-    @classmethod
-    def __get_file(cls, f):
-        from os.path import join
-        return join('.', 'italki', f)
-        
-    def __get_tecdictorgfile(self):
-        return self.__class__.__get_file('italki_'+self.language[0:2]+'org.json')
-        
-    def __get_tecdictfile(self):
-        return self.__class__.__get_file('italki_'+self.language[0:2]+'.json')
-        
-    def __get_urlpairarrayfile(self):
-        return self.__class__.__get_file('log.'+self.language[0:2]+'.pickle')
-        
-    def collect(self, cont=False):
-        tecorgdict = dict()
+    def collect(self):
+        tecdictorg = dict()
         baseurl = 'https://www.italki.com/teachers/'+self.language
         log = [[baseurl, '', False]]
         
+        import json
+        import pickle
+        
         from os.path import exists
-        if exists(self.__get_tecdictorgfile()):
-            with open(self.__get_tecdictorgfile(), 'r') as f:
-                tecorgdict = json.load(f)
-        if cont and exists(self.__get_urlpairarrayfile()):
-            with open(self.__get_urlpairarrayfile(), 'rb') as f:
+        if exists(self.fileindex.get_tecdictorgfile()):
+            with open(self.fileindex.get_tecdictorgfile(), 'r') as f:
+                tecdictorg = json.load(f)
+        if exists(self.fileindex.get_logfile()):
+            with open(self.fileindex.get_logfile(), 'rb') as f:
                 log = pickle.load(f)
                 
         logiter = iter(log)
@@ -144,10 +166,10 @@ class Italki:
             from time import sleep
             sleep(1)
             
-            tmptecdict = self.__class__.__get_tmptecdict(entry[0])
-            tecorgdict.update(tmptecdict)
+            tecdicttmp = self.__class__.__get_tecdicttmp(entry[0])
+            tecdictorg.update(tecdicttmp)
             
-            if len(tmptecdict) >= 20:
+            if len(tecdicttmp) >= 20:
                 if entry[1] == '':
                     urlcntyarray = self.__class__.__get_urlcntyarray(entry[0])
                     log.extend([[urlcnty, 'cnty', False] for urlcnty in urlcntyarray])
@@ -166,45 +188,59 @@ class Italki:
                     
             entry[2] = True
                     
+            """
             while True:
                 try:
-                    with open(self.__get_tecdictorgfile(), 'w') as f:
-                        json.dump(tecorgdict, f)
+                    with open(self.fileindex.get_tecdictorgfile(), 'w') as f:
+                        json.dump(tecdictorg, f)
                     break
                 except Exception as err:
                     print(err)
                     from time import sleep
                     sleep(60)
+            """
+            self.__class__.__loopfunc(60, json.dump, tecdictorg, f)
                     
+            """
             while True:
                 try:
-                    with open(self.__get_urlpairarrayfile(), 'wb') as f:
+                    with open(self.fileindex.get_logfile(), 'wb') as f:
                         pickle.dump(log, f)
                     break
                 except Exception as err:
                     print(err)
                     from time import sleep
                     sleep(60)
-                
-            """entry[2] = True"""
-            
+            """
+            self.__class__.__loopfunc(60, pickle.dump, log, f)
+                    
         tecdict = dict()
-        for k in tecorgdict.keys():
+        for k in tecdictorg.keys():
             try:
                 tecdict.setdefault(k, dict())
-                tecdict[k]['origin_country_id'] = tecorgdict[k]['origin_country_id']
-                tecdict[k]['living_country_id'] = tecorgdict[k]['living_country_id']
-                tecdict[k]['origin_city_name'] = tecorgdict[k]['origin_city_name']
-                tecdict[k]['living_city_name'] = tecorgdict[k]['living_city_name']
-                tecdict[k]['timezone'] = tecorgdict[k]['timezone']
+                tecdict[k]['origin_country_id'] = tecdictorg[k]['origin_country_id']
+                tecdict[k]['living_country_id'] = tecdictorg[k]['living_country_id']
+                tecdict[k]['origin_city_name'] = tecdictorg[k]['origin_city_name']
+                tecdict[k]['living_city_name'] = tecdictorg[k]['living_city_name']
+                tecdict[k]['timezone'] = tecdictorg[k]['timezone']
             except TypeError as e:
                 print(e)
             except KeyError as e:
                 print(e)
                 
-        with open(self.__get_tecdictfile(), 'w') as f:
-            json.dump(tecdict, f)
-            
+        """
+        while True:
+            try:
+                with open(self.fileindex.get_tecdictfile(), 'w') as f:
+                    json.dump(tecdict, f)
+                break
+            except Exception as err:
+                print(err)
+                from time import sleep
+                sleep(60)
+        """
+        self.__class__.__loopfunc(60, json.dump, tecdict, f)
+                
     @classmethod
     def __check(cls, tec, conarrayorg):
         from collections.abc import Iterable
@@ -229,7 +265,7 @@ class Italki:
                 return False
                 
         return True
-        
+
     def get_urlarray(self, conarray, unseen=False):
         urlarray = list()
         
@@ -257,7 +293,6 @@ class Italki:
                         
                 for k in tecdict.keys():
                     if self.__class__.__check(tecdict[k], conarray) == True:
-                        """url = 'https://www.italki.com/teacher/'+str(tecdict[k]['user_id'])+'/'"""
                         url = 'https://www.italki.com/teacher/'+str(k)+'/'
                         if unseen == True and url in history:
                             continue
@@ -270,19 +305,30 @@ class Italki:
                 urlarray = list()
                 
         return urlarray
-    
-def itfunc(*args, **kwargs):
-    """from italki import Italki"""
-    
-    """"""
+        
+def itfunc():
     langarray = ['english', 'japanese', 'spanish']
-    """langarray = ['english', 'japanese']"""
-    """langarray = ['spanish']"""
+    
     for lang in langarray:
         it = Italki(lang)
-        it.collect(*args, **kwargs)
+        
+        it.collect()
+        
+        from git_push import git_push
+        git_push([it.fileindex.get_tecdictfile()])
+        
+    for lang in langarray:
+        it = Italki(lang)
+        
+        from os.path import exists
+        from os import remove
+        if exists(it.fileindex.get_logfile()):
+            remove(it.fileindex.get_logfile())
+            
     print('Hello, itfunc!')
                     
 if __name__ == '__main__':
-    """"""
+    """
+    itfunc()
+    """
     
