@@ -28,34 +28,7 @@ class Preply:
         self.fileindex = self.__class__.FileIndex(self.language[0:2])
         
     @classmethod
-    def load_tutorsdict(cls, jsonpath):
-        tutorsdict = dict()
-
-        import os.path
-        if os.path.exists(jsonpath):
-            import json
-            with open(jsonpath, 'r') as f:
-                for t in range(100):
-                    try:
-                        tutorsdict = json.load(f)
-                        break
-                    except Exception as err:
-                        print(err)
-                        import time
-                        time.sleep(1)
-                        tutorsdict = dict()
-                        
-        return tutorsdict
-        
-    def __get_urliter(self, pagenumber):
-        for i in range(1,pagenumber):
-            url = 'https://preply.com/en/online/'+self.language+'-tutors'
-            if i >= 2:
-                url += '?page='+str(i)
-            yield url
-            
-    @classmethod
-    def __loopfunc(t, func, *args, **kwargs):
+    def __loopfunc(cls, t, func, *args, **kwargs):
         y = None
         while True:
             try:
@@ -67,7 +40,39 @@ class Preply:
                 sleep(t)
                 
         return y
+        
+    @classmethod
+    def load_tutorsdict(cls, jsonpath):
+        """tutorsdict = dict()"""
 
+        import os.path
+        if os.path.exists(jsonpath):
+            with open(jsonpath, 'r') as f:
+                import json
+                tutorsdict = cls.__loopfunc(1, json.load, f)
+                return tutorsdict
+                """
+                for t in range(100):
+                    try:
+                        tutorsdict = json.load(f)
+                        break
+                    except Exception as err:
+                        print(err)
+                        import time
+                        time.sleep(1)
+                        tutorsdict = dict()
+                """
+                        
+        """return tutorsdict"""
+        return dict()
+        
+    def __get_urliter(self, pagenumber):
+        for i in range(1,pagenumber):
+            url = 'https://preply.com/en/online/'+self.language+'-tutors'
+            if i >= 2:
+                url += '?page='+str(i)
+            yield url
+            
     @classmethod
     def __json_tutorsdicttmp(cls, url):
         tutorsdicttmp = dict()
@@ -84,6 +89,7 @@ class Preply:
                     from time import sleep
                     sleep(60)
             """
+            import requests
             response = cls.__loopfunc(60, requests.get, url)
 
             if response.status_code == 200:
@@ -143,10 +149,12 @@ class Preply:
                 tutorsdict.setdefault(k, dict())
                 tutorsdict[k]['tzname'] = tutorsorgdict[k]['user']['profile']['timezone']['tzname']
                 tutorsdict[k]['countryOfBirth'] = tutorsorgdict[k]['countryOfBirth']['name']
-            except TypeError as e:
-                print(e)
             except KeyError as e:
                 print(e)
+            """
+            except TypeError as e:
+                print(e)
+            """
 
         with open(self.fileindex.get_jsonpath(), 'w') as f:
             json.dump(tutorsdict, f)
@@ -171,8 +179,9 @@ class Preply:
                     countrydict[k][reader[i][0]] = tmp
 
         return countrydict
-
-    def get_urlarray(self, conarrayorg, unseen=False):
+        
+    """def __get_urlarray(self, conarrayorg, unseen=False):"""
+    def __get_urlarray(self, conarrayorg, unseen):
         from collections.abc import Iterable
 
         conarray = list()
@@ -189,61 +198,50 @@ class Preply:
 
         tutorsdict = self.__class__.load_tutorsdict(self.fileindex.get_jsonpath())
         countrydict = self.__class__.__get_countrydict()
+        
+        tutorarray = list()
+        for tutor in tutorsdict.keys():
+            if 'countryOfBirth' not in tutorsdict[tutor]:
+                continue
+            if 'tzname' not in tutorsdict[tutor]:
+                continue
+            f = True
+            for con in conarray:
+                if con[0] == 'origin_country_id':
+                    if not((tutorsdict[tutor]['countryOfBirth'] in countrydict['countryname'].get(con[1], [])) == con[2]):
+                        f = False
+                        break
+                if con[0] == 'living_country_id':
+                    if not((tutorsdict[tutor]['tzname'] in countrydict['timezone'].get(con[1], [])) == con[2]):
+                        f = False
+                        break
+                if con[0] == 'tzname':
+                    if not((tutorsdict[tutor]['tzname'] == con[1]) == con[2]):
+                        f = False
+                        break
+            if f == True:
+                tutorarray.append(tutor)
 
+        history = list()
+        with open(self.fileindex.__class__.get_historypath(), 'r') as f:
+            while True:
+                line = f.readline()
+                if len(line) <= 0:
+                    break
+                history.append(line.strip().split(' ')[-1])
+                
         urlarray = list()
-        for t in range(100):
-            try:
-                tutorarray = list()
-                for tutor in tutorsdict.keys():
-                    if 'countryOfBirth' not in tutorsdict[tutor]:
-                        continue
-                    if 'tzname' not in tutorsdict[tutor]:
-                        continue
-                    f = True
-                    for con in conarray:
-                        if con[0] == 'origin_country_id':
-                            if not((tutorsdict[tutor]['countryOfBirth'] in countrydict['countryname'].get(con[1], [])) == con[2]):
-                                f = False
-                                break
-                        if con[0] == 'living_country_id':
-                            if not((tutorsdict[tutor]['tzname'] in countrydict['timezone'].get(con[1], [])) == con[2]):
-                                f = False
-                                break
-                        if con[0] == 'tzname':
-                            if not((tutorsdict[tutor]['tzname'] == con[1]) == con[2]):
-                                f = False
-                                break
-                    if f == True:
-                        tutorarray.append(tutor)
+        for tutor in tutorarray:
+            url = 'https://preply.com/en/tutor/2300258/'.replace('2300258',str(tutor))
+            if unseen == True and url in history:
+                continue
+            else:
+                urlarray.append(url)
+                
+        return urlarray
 
-                history = list()
-                with open(self.fileindex.__class__.get_historypath(), 'r') as f:
-                    while True:
-                        line = f.readline()
-                        if len(line) <= 0:
-                            break
-                        history.append(line.strip().split(' ')[-1])
-
-                for tutor in tutorarray:
-                    url = 'https://preply.com/en/tutor/2300258/'.replace('2300258',str(tutor))
-                    if unseen == True and url in history:
-                        continue
-                    else:
-                        urlarray.append(url)
-                break
-            except Exception as err:
-                print(err)
-                import time
-                time.sleep(1)
-                urlarray = list()
-            """
-            except ValueError as err:
-                print(err)
-                import time
-                time.sleep(1)
-                urlarray = list()
-            """
-
+    def get_urlarray(self, conarrayorg, unseen=False):
+        urlarray = self.__class__.__loopfunc(1, self.__get_urlarray, conarrayorg, unseen)
         return urlarray
         
 def __get_alpha_2(countryname):

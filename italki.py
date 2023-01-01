@@ -22,8 +22,11 @@ class Italki:
         self.fileindex = self.__class__.FileIndex(self.language[0:2])
         
     @classmethod
-    def __loopfunc(t, func, *args, **kwargs):
+    def __loopfunc(cls, t, func, *args, **kwargs):
         y = None
+        """
+
+        """
         while True:
             try:
                 y = func(*args, **kwargs)
@@ -32,6 +35,7 @@ class Italki:
                 print(err)
                 from time import sleep
                 sleep(t)
+        """y = func(*args, **kwargs)"""
                 
         return y
         
@@ -49,6 +53,7 @@ class Italki:
                 from time import sleep
                 sleep(60)
         """
+        import requests
         response = cls.__loopfunc(60, requests.get, url)
                 
         if response.status_code == 200:
@@ -139,6 +144,13 @@ class Italki:
         return keywordarray
         
     def collect(self):
+        """
+
+        """
+        def dump(file, mode, module, obj):
+            with open(file, mode) as f:
+                module.dump(obj, f)
+                
         tecdictorg = dict()
         baseurl = 'https://www.italki.com/teachers/'+self.language
         log = [[baseurl, '', False]]
@@ -197,10 +209,11 @@ class Italki:
                 except Exception as err:
                     print(err)
                     from time import sleep
-                    sleep(60)
+                    sleep(1)
             """
-            self.__class__.__loopfunc(60, json.dump, tecdictorg, f)
-                    
+            """self.__class__.__loopfunc(1, json.dump, tecdictorg, open(self.fileindex.get_tecdictorgfile(), 'w'))"""
+            self.__class__.__loopfunc(1, dump, self.fileindex.get_tecdictorgfile(), 'w', json, tecdictorg)
+            
             """
             while True:
                 try:
@@ -210,10 +223,11 @@ class Italki:
                 except Exception as err:
                     print(err)
                     from time import sleep
-                    sleep(60)
+                    sleep(1)
             """
-            self.__class__.__loopfunc(60, pickle.dump, log, f)
-                    
+            """self.__class__.__loopfunc(1, pickle.dump, log, open(self.fileindex.get_logfile(), 'wb'))"""
+            self.__class__.__loopfunc(1, dump, self.fileindex.get_logfile(), 'wb', pickle, log)
+            
         tecdict = dict()
         for k in tecdictorg.keys():
             try:
@@ -223,10 +237,12 @@ class Italki:
                 tecdict[k]['origin_city_name'] = tecdictorg[k]['origin_city_name']
                 tecdict[k]['living_city_name'] = tecdictorg[k]['living_city_name']
                 tecdict[k]['timezone'] = tecdictorg[k]['timezone']
-            except TypeError as e:
-                print(e)
             except KeyError as e:
                 print(e)
+            """
+            except TypeError as e:
+                print(e)
+            """
                 
         """
         while True:
@@ -237,10 +253,11 @@ class Italki:
             except Exception as err:
                 print(err)
                 from time import sleep
-                sleep(60)
+                sleep(1)
         """
-        self.__class__.__loopfunc(60, json.dump, tecdict, f)
-                
+        """self.__class__.__loopfunc(1, json.dump, tecdict, open(self.fileindex.get_tecdictfile(), 'w'))"""
+        self.__class__.__loopfunc(1, dump, self.fileindex.get_tecdictfile(), 'w', json, tecdict)
+        
     @classmethod
     def __check(cls, tec, conarrayorg):
         from collections.abc import Iterable
@@ -307,36 +324,34 @@ class Italki:
                 
         return urlarray
     """
-    def get_urlarray(self, conarray, unseen=False):
-        urlarray = list()
-        for t in range(100):
-            try:
-                tecdict = None
-                with open(self.fileindex.get_tecdictfile(), 'r') as f:
-                    import json
-                    tecdict = json.load(f)
-                    
-                history = list()
-                with open('history.txt', 'r') as f:
-                    while True:
-                        line = f.readline()
-                        if len(line) <= 0:
-                            break
-                        history.append(line.strip().split(' ')[-1])
-                        
-                for k in tecdict.keys():
-                    if self.__class__.__check(tecdict[k], conarray) == True:
-                        url = 'https://www.italki.com/teacher/'+str(k)+'/'
-                        if unseen == True and url in history:
-                            continue
-                        urlarray.append(url)
-                break
-            except Exception as err:
-                print(err)
-                import time
-                time.sleep(1)
-                urlarray = list()
+    
+    """def __get_urlarray(self, conarray, unseen=False)"""
+    def __get_urlarray(self, conarray, unseen):
+        tecdict = dict()
+        with open(self.fileindex.get_tecdictfile(), 'r') as f:
+            import json
+            tecdict = json.load(f)
+            
+        history = list()
+        with open('history.txt', 'r') as f:
+            while True:
+                line = f.readline()
+                if len(line) <= 0:
+                    break
+                history.append(line.strip().split(' ')[-1])
                 
+        urlarray = list()        
+        for k in tecdict.keys():
+            if self.__class__.__check(tecdict[k], conarray) == True:
+                url = 'https://www.italki.com/teacher/'+str(k)+'/'
+                if unseen == True and url in history:
+                    continue
+                urlarray.append(url)
+                
+        return urlarray
+    
+    def get_urlarray(self, conarray, unseen=False):
+        urlarray = self.__class__.__loopfunc(1, self.__get_urlarray, conarray, unseen)
         return urlarray
         
 def itfunc():
@@ -358,7 +373,7 @@ def itfunc():
         if exists(it.fileindex.get_logfile()):
             remove(it.fileindex.get_logfile())
             
-    print('Hello, itfunc!')
+    """print('Hello, itfunc!')"""
                     
 if __name__ == '__main__':
     """
