@@ -282,6 +282,7 @@ class Italki:
                 history.append(line.strip().split(' ')[-1])
         """
         f = open('history.txt', 'r')
+        history = list()
         while True:
             line = f.readline()
             if len(line) <= 0:
