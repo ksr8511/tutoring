@@ -12,34 +12,77 @@ def __has_tzname(vorg):
         
     return True
     
-def arrange():
+def __get_itdict():
     import json
+    
     itdict = dict()
-    prdict = dict()
     for lang in ['en', 'ja', 'ru']:
+        """
         with open('./italki/italki_'+lang+'.json', 'r') as f:
             tmpitdict = json.load(f)
             for k in tmpitdict.keys():
                 itdict[k] = tmpitdict[k]['living_country_id']
-                
-        countrydict = dict()
-        import csv
-        with open('./preply/country.csv', 'r') as csvfile:
-            spamreader = csv.reader(csvfile)
-            next(spamreader)
-            for row in spamreader:
-                countrydict[row[2]] = row[0]
-                
+        """
+        itfile = open('./italki/italki_'+lang+'.json', 'r')
+        tmpitdict = json.load(itfile)
+        for k in tmpitdict.keys():
+            itdict[k] = tmpitdict[k]['living_country_id']
+        itfile.close()
+    
+    return itdict
+    
+def __get_countrydict():
+    countrydict = dict()
+    """
+    import csv
+    with open('./preply/country.csv', 'r') as csvfile:
+        spamreader = csv.reader(csvfile)
+        next(spamreader)
+        for row in spamreader:
+            countrydict[row[2]] = row[0]
+    """
+    csvfile = open('./preply/country.csv', 'r')
+    import csv
+    spamreader = csv.reader(csvfile)
+    next(spamreader)
+    for row in spamreader:
+        countrydict[row[2]] = row[0]
+    csvfile.close()
+    
+    return countrydict
+    
+def __get__prdict():
+    import json
+    
+    prdict = dict()
+    countrydict = __get_countrydict()
+    for lang in ['en', 'ja', 'ru']:
+        """
         with open('./preply/preply_'+lang+'.json', 'r') as f:
             tmpprdict = json.load(f)
             for k in tmpprdict.keys():
-                """if __has_tzname(tmpprdict[k]) and (tmpprdict[k]['user']['profile']['timezone']['tzname'] in countrydict.keys()):"""
                 if __has_tzname(tmpprdict[k]) and (tmpprdict[k]['tzname'] in countrydict.keys()):
-                    """prdict[k] = countrydict[tmpprdict[k]['user']['profile']['timezone']['tzname']]"""
                     prdict[k] = countrydict[tmpprdict[k]['tzname']]
                 else:
                     prdict[k] = '##'
-                
+        """
+        prfile = open('./preply/preply_'+lang+'.json', 'r')
+        tmpprdict = json.load(prfile)
+        for k in tmpprdict.keys():
+            if __has_tzname(tmpprdict[k]) and (tmpprdict[k]['tzname'] in countrydict.keys()):
+                prdict[k] = countrydict[tmpprdict[k]['tzname']]
+            else:
+                prdict[k] = '##'
+        prfile.close()
+        
+    return prdict
+    
+def arrange():
+    """import json"""
+    itdict = __get_itdict()
+    prdict = __get_prdict()
+    
+    """
     orgarray = list()
     with open('history.txt', 'r') as f:
         while True:
@@ -55,6 +98,24 @@ def arrange():
             else:
                 tmporgarray.append(line)
             orgarray += [x.split(' ')[-1].replace('/english', '/').replace('/japanese', '/').replace('/russian', '/') for x in tmporgarray]
+    """
+    f = open('history.txt', 'r')
+    orgarray = list()
+    while True:
+        line = f.readline()
+        if len(line) <= 0:
+            break
+        line = line.strip()
+        p = line.find('https://', line.find('https://')+len('https://'))
+        tmporgarray = list()
+        if p >= 0:
+            tmporgarray.append('/'.join(line[:p].split('/')[:-1])+'/')
+            tmporgarray.append(line[:p].split('/')[-1]+line[p:])
+        else:
+            tmporgarray.append(line)
+        orgarray += [x.split(' ')[-1].replace('/english', '/').replace('/japanese', '/').replace('/russian', '/') for x in tmporgarray]
+    f.close()
+    
     orgarray = list(set(orgarray))
             
     dstarray = list()
@@ -80,9 +141,15 @@ def arrange():
     if os.path.exists('history.txt.backup'):
         os.remove('history.txt.backup')
     os.rename('history.txt', 'history.txt.backup')
+    """
     with open('history.txt', 'w') as f:
         for x in dstarray:
             f.write(' '.join(x)+'\n')
+    """
+    f = open('history.txt', 'w')
+    for x in dstarray:
+        f.write(' '.join(x)+'\n')
+    f.close()
             
 """
 with open('history.txt.220909', 'r') as f:

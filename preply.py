@@ -43,27 +43,21 @@ class Preply:
         
     @classmethod
     def load_tutorsdict(cls, jsonpath):
-        """tutorsdict = dict()"""
-
         import os.path
         if os.path.exists(jsonpath):
+            """
             with open(jsonpath, 'r') as f:
                 import json
                 tutorsdict = cls.__loopfunc(1, json.load, f)
                 return tutorsdict
-                """
-                for t in range(100):
-                    try:
-                        tutorsdict = json.load(f)
-                        break
-                    except Exception as err:
-                        print(err)
-                        import time
-                        time.sleep(1)
-                        tutorsdict = dict()
-                """
-                        
-        """return tutorsdict"""
+            """
+            import json
+            f = open(jsonpath, 'r')
+            tutorsdict = cls.__loopfunc(1, json.load, f)
+            f.close()
+            
+            return tutorsdict
+                
         return dict()
         
     def __get_urliter(self, pagenumber):
@@ -78,17 +72,6 @@ class Preply:
         tutorsdicttmp = dict()
 
         for i in range(10):
-            """
-            while True:
-                try:
-                    import requests
-                    response = requests.get(url)
-                    break
-                except Exception as err:
-                    print(err)
-                    from time import sleep
-                    sleep(60)
-            """
             import requests
             response = cls.__loopfunc(60, requests.get, url)
 
@@ -130,9 +113,13 @@ class Preply:
             tutorsorgdict.update(tutorsorgdicttmp)
 
         import json
-
+        """
         with open(self.fileindex.get_jsonorgpath(), 'w') as f:
             json.dump(tutorsorgdict, f)
+        """
+        f = open(self.fileindex.get_jsonorgpath(), 'w')
+        json.dump(tutorsorgdict, f)
+        f.close()
 
         for k in tutorsorgdict.keys():
             try:
@@ -156,15 +143,22 @@ class Preply:
                 print(e)
             """
 
+        """
         with open(self.fileindex.get_jsonpath(), 'w') as f:
             json.dump(tutorsdict, f)
             print('len(tutorsdict.keys()):', len(tutorsdict.keys()))
+        """
+        f = open(self.fileindex.get_jsonpath(), 'w')
+        json.dump(tutorsdict, f)
+        f.close()
+        print('len(tutorsdict.keys()):', len(tutorsdict.keys()))
 
     @classmethod
     def __get_countrydict(cls):
         import csv
 
         countrydict = {'countryname': dict(), 'timezone': dict()}
+        """
         with open(cls.FileIndex.get_countrypath(), 'r') as f:
             reader = list(csv.reader(f))
             for i in range(len(reader)):
@@ -177,11 +171,25 @@ class Preply:
                     tmp = countrydict[k][reader[i][0]]
                     tmp.append(v[k])
                     countrydict[k][reader[i][0]] = tmp
+        """
+        f = open(cls.FileIndex.get_countrypath(), 'r')
+        reader = list(csv.reader(f))
+        for i in range(len(reader)):
+            if i == 0:
+                continue
 
+            v = {'countryname': reader[i][1], 'timezone': reader[i][2]}
+            for k in ['countryname', 'timezone']:
+                countrydict[k].setdefault(reader[i][0], list())
+                tmp = countrydict[k][reader[i][0]]
+                tmp.append(v[k])
+                countrydict[k][reader[i][0]] = tmp
+        f.close()
+        
         return countrydict
         
-    """def __get_urlarray(self, conarrayorg, unseen=False):"""
-    def __get_urlarray(self, conarrayorg, unseen):
+    """def __get_urlarray(self, conarrayorg, unseen):"""
+    def get_urlarray(self, conarrayorg, unseen):
         from collections.abc import Iterable
 
         conarray = list()
@@ -223,13 +231,22 @@ class Preply:
                 tutorarray.append(tutor)
 
         history = list()
+        """
         with open(self.fileindex.__class__.get_historypath(), 'r') as f:
             while True:
                 line = f.readline()
                 if len(line) <= 0:
                     break
                 history.append(line.strip().split(' ')[-1])
-                
+        """
+        f = open(self.fileindex.__class__.get_historypath(), 'r')
+        while True:
+            line = f.readline()
+            if len(line) <= 0:
+                break
+            history.append(line.strip().split(' ')[-1])
+        f.close()
+        
         urlarray = list()
         for tutor in tutorarray:
             url = 'https://preply.com/en/tutor/2300258/'.replace('2300258',str(tutor))
@@ -240,9 +257,11 @@ class Preply:
                 
         return urlarray
 
+    """
     def get_urlarray(self, conarrayorg, unseen=False):
         urlarray = self.__class__.__loopfunc(1, self.__get_urlarray, conarrayorg, unseen)
         return urlarray
+    """
         
 def __get_alpha_2(countryname):
     import pycountry
@@ -281,12 +300,20 @@ def find_notexisting():
     tznameexisting = list()
 
     from os.path import join
+    """
     with open(join('.', 'preply', 'country.csv'), 'r') as csvfile:
         spamreader = csv.reader(csvfile)
         next(spamreader)
         for row in spamreader:
             tznameexisting.append(row[2])
-
+    """
+    csvfile = open(join('.', 'preply', 'country.csv'), 'r')
+    spamreader = csv.reader(csvfile)
+    next(spamreader)
+    for row in spamreader:
+        tznameexisting.append(row[2])
+    csvfile.close()
+    
     for tzname in tznameset:
         if tzname not in tznameexisting:
             if tzname == 'GMT':
