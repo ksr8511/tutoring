@@ -30,6 +30,7 @@ def __show(urlarray, p=0, w=10, altwindow=False, history=False):
         f.write(clipboard)
         f.close()
             
+"""
 def __loopfunc(t, func, *args, **kwargs):
     y = None
     while True:
@@ -42,6 +43,7 @@ def __loopfunc(t, func, *args, **kwargs):
             sleep(t)
             
     return y
+"""
             
 def show_country_id(country_idarray, srcarray=[Preply, Italki], langarray=['english', 'japanese', 'spanish']):
     tutoringarray = list()
@@ -54,10 +56,12 @@ def show_country_id(country_idarray, srcarray=[Preply, Italki], langarray=['engl
         for tutoring in tutoringarray:
             if country_id == 'EG':
                 """urlarray += tutoring.get_urlarray([['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'EG', True], ['origin_country_id', 'ZA', False]], unseen=True)"""
-                urlarray += __loopfunc(1, tutoring.get_urlarray, [['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'EG', True], ['origin_country_id', 'ZA', False]], unseen=True)
+                """urlarray += __loopfunc(1, tutoring.get_urlarray, [['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'EG', True], ['origin_country_id', 'ZA', False]], unseen=True)"""
+                urlarray += tutoring.get_urlarray([['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'EG', True], ['origin_country_id', 'ZA', False]], unseen=True)
             else:
                 """urlarray += tutoring.get_urlarray([['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'ZA', False]], unseen=True)"""
-                urlarray += __loopfunc(1, tutoring.get_urlarray, [['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'ZA', False]], unseen=True)
+                """urlarray += __loopfunc(1, tutoring.get_urlarray, [['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'ZA', False]], unseen=True)"""
+                urlarray += tutoring.get_urlarray([['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'ZA', False]], unseen=True)
                 
     __show(sorted(set(urlarray)), history=True)
     
@@ -70,7 +74,8 @@ def show_city_name(city_namearray, langarray=['english', 'japanese', 'spanish'])
     for city_name in city_namearray:
         for tutoring in tutoringarray:
             """urlarray += tutoring.get_urlarray([['living_city_name', city_name]], unseen=True)"""
-            urlarray += __loopfunc(1, tutoring.get_urlarray, [['living_city_name', city_name]], unseen=True)
+            """urlarray += __loopfunc(1, tutoring.get_urlarray, [['living_city_name', city_name]], unseen=True)"""
+            urlarray += tutoring.get_urlarray([['living_city_name', city_name]], unseen=True)
             
     __show(sorted(set(urlarray)), history=True)
 

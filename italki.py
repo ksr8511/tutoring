@@ -1,44 +1,36 @@
-class Italki:
-    class FileIndex:
-        def __init__(self, language):
-            self.language = language
-            
-        @classmethod
-        def __get_file(cls, f):
-            from os.path import join
-            return join('.', 'italki', f)
-            
-        def get_tecdictorgfile(self):
-            return self.__class__.__get_file('italki_'+self.language[0:2]+'org.json')
-            
-        def get_tecdictfile(self):
-            return self.__class__.__get_file('italki_'+self.language[0:2]+'.json')
-            
-        def get_logfile(self):
-            return self.__class__.__get_file('log.'+self.language[0:2]+'.pickle')
-            
+from tutoring import Tutoring
+
+class Italki(Tutoring):
+    """"""
+    pf = 'italki'
+    
     def __init__(self, language):
         self.language = language
-        self.fileindex = self.__class__.FileIndex(self.language[0:2])
+        """self.fileindex = self.__class__.FileIndex(self.language[0:2])"""
+        """self.fileindex = self.__class__.FileIndex(self.language)"""
+        """self.fileindex = self.__class__.FileIndex('italki', self.language)"""
+        """"""
+        self.fileindex = self.__class__.FileIndex(self.__class__.pf, self.language)
+        """self.fileindex = self.__class__.FileIndex(self.__class__.__get_pf(), self.language)"""
         
+    """
     @classmethod
-    def __loopfunc(cls, t, func, *args, **kwargs):
-        y = None
-        while True:
-            try:
-                y = func(*args, **kwargs)
-                break
-            except Exception as err:
-                print(err)
-                from time import sleep
-                sleep(t)
-                
-        return y
+    def __get_pf(cls):
+        return 'italki'
+    """
+        
+    def get_logpath(self):
+        """return self.__class__.__get_path('log.'+self.language[0:2]+'.pickle')"""
+        from os.path import join
+        """return join('.', 'italki', 'log.'+self.language[0:2]+'.pickle')"""
+        """"""
+        return join('.', self.__class__.pf, 'log.'+self.language[0:2]+'.pickle')
+        """return join('.', self.__class__.__get_pf(), 'log.'+self.language[0:2]+'.pickle')"""
         
     @classmethod
     def __get_tecdicttmp(cls, url):
         import requests
-        response = cls.__loopfunc(60, requests.get, url)
+        response = cls.loopfunc(60, requests.get, url)
                 
         if response.status_code == 200:
             from bs4 import BeautifulSoup
@@ -47,11 +39,15 @@ class Italki:
             
             import json
             soupjson = soup.find('script', id='__NEXT_DATA__', type='application/json')
-            tecjson = json.loads(soupjson.string)['props']['pageProps']['teachers']
             tmptecdict = dict()
-            for t in tecjson:
-                userinfo = t['user_info']
-                tmptecdict[userinfo['user_id']] = userinfo
+            try:
+                tecjson = json.loads(soupjson.string)['props']['pageProps']['teachers']
+                for t in tecjson:
+                    userinfo = t['user_info']
+                    tmptecdict[userinfo['user_id']] = userinfo
+            except KeyError as err:
+                print(err)
+                return dict()
                 
             return tmptecdict
         else:
@@ -130,8 +126,9 @@ class Italki:
     def collect(self):
         """
         def dump(file, mode, module, obj):
-            with open(file, mode) as f:
-                module.dump(obj, f)
+            f = open(file, mode)
+            module.dump(obj, f)
+            f.close()
         """
                 
         tecdictorg = dict()
@@ -142,26 +139,15 @@ class Italki:
         import pickle
         
         from os.path import exists
-        if exists(self.fileindex.get_tecdictorgfile()):
-            """
-            with open(self.fileindex.get_tecdictorgfile(), 'r') as f:
-                tecdictorg = json.load(f)
-            """
-            f = open(self.fileindex.get_tecdictorgfile(), 'r')
+        if exists(self.fileindex.get_jsonorgpath()):
+            f = open(self.fileindex.get_jsonorgpath(), 'r')
             tecdictorg = json.load(f)
             f.close()
-        if exists(self.fileindex.get_logfile()):
-            """
-            with open(self.fileindex.get_logfile(), 'rb') as f:
-                log = pickle.load(f)
-            """
-            f = open(self.fileindex.get_logfile(), 'rb')
+        if exists(self.get_logpath()):
+            f = open(self.get_logpath(), 'rb')
             log = pickle.load(f)
             f.close()
             
-        jsonfile = open(self.fileindex.get_tecdictorgfile(), 'w')
-        logfile = open(self.fileindex.get_logfile(), 'wb')
-        
         logiter = iter(log)
         while True:
             entry = next(logiter, None)
@@ -195,22 +181,23 @@ class Italki:
                     log.extend([[urlkeyword, 'keyword', False] for urlkeyword in urlkeywordarray])
                     
             entry[2] = True
-                    
-            """
-            self.__class__.__loopfunc(1, dump, self.fileindex.get_tecdictorgfile(), 'w', json, tecdictorg)
-            """
-            """jsonfile = open(self.fileindex.get_tecdictorgfile(), 'w')"""
-            """self.__class__.__loopfunc(1, json.dump, tecdictorg, jsonfile)"""
-            json.dump(tecdictorg, jsonfile)
-            """jsonfile.close()"""
-            """self.__class__.__loopfunc(1, dump, self.fileindex.get_logfile(), 'wb', pickle, log)"""
-            """logfile = open(self.fileindex.get_logfile(), 'wb')"""
-            """self.__class__.__loopfunc(1, pickle.dump, log, logfile)"""
-            pickle.dump(log, logfile)
-            """logfile.close()"""
             
-        jsonfile.close()
-        logfile.close()
+            """
+
+            """
+            """jsonfile = open(self.fileindex.get_jsonorgpath(), 'w')"""
+            jsonfile = self.__class__.loopfunc(1, open, self.fileindex.get_jsonorgpath(), 'w')
+            json.dump(tecdictorg, jsonfile)
+            jsonfile.close()
+            """self.__class__.loopfunc(1, dump, self.fileindex.get_jsonorgpath(), 'w', json, tecdictorg)"""
+            """
+
+            """
+            """logfile = open(self.get_logpath(), 'wb')"""
+            logfile = self.__class__.loopfunc(1, open, self.get_logpath(), 'wb')
+            pickle.dump(log, logfile)
+            logfile.close()
+            """self.__class__.loopfunc(1, dump, self.get_logpath(), 'wb', pickle, log)"""
             
         tecdict = dict()
         for k in tecdictorg.keys():
@@ -227,12 +214,16 @@ class Italki:
             except TypeError as e:
                 print(e)
             """
-                
-        """self.__class__.__loopfunc(1, dump, self.fileindex.get_tecdictfile(), 'w', json, tecdict)"""
-        tecdictfile = open(self.fileindex.get_tecdictfile(), 'w')
-        """self.__class__.__loopfunc(1, json.dump, tecdict, tecdictfile)"""
+            
+        """
+
+        """
+        """tecdictfile = open(self.fileindex.get_jsonpath(), 'w')"""
+        tecdictfile = self.__class__.loopfunc(1, open, self.fileindex.get_jsonpath(), 'w')
         json.dump(tecdict, tecdictfile)
         tecdictfile.close()
+        """self.__class__.loopfunc(1, dump, self.fileindex.get_jsonpath(), 'w', json, tecdict)"""
+        print('len(tecdict.keys()):', len(tecdict.keys()))
         
     @classmethod
     def __check(cls, tec, conarrayorg):
@@ -259,52 +250,31 @@ class Italki:
                 
         return True
         
-    """def __get_urlarray(self, conarray, unseen):"""
-    def get_urlarray(self, conarray, unseen):
-        """
-        tecdict = dict()
-        with open(self.fileindex.get_tecdictfile(), 'r') as f:
-            import json
-            tecdict = json.load(f)
-        """
+    def get_urlarray(self, conarrayorg, unseen):
         import json
-        f = open(self.fileindex.get_tecdictfile(), 'r')
-        tecdict = json.load(f)
-        f.close()
         
-        """
-        history = list()
-        with open('history.txt', 'r') as f:
-            while True:
-                line = f.readline()
-                if len(line) <= 0:
-                    break
-                history.append(line.strip().split(' ')[-1])
-        """
-        f = open('history.txt', 'r')
+        tecdictfile = open(self.fileindex.get_jsonpath(), 'r')
+        tecdict = json.load(tecdictfile)
+        tecdictfile.close()
+        
+        historyfile = open('history.txt', 'r')
         history = list()
         while True:
-            line = f.readline()
+            line = historyfile.readline()
             if len(line) <= 0:
                 break
             history.append(line.strip().split(' ')[-1])
-        f.close()
+        historyfile.close()
         
         urlarray = list()
         for k in tecdict.keys():
-            if self.__class__.__check(tecdict[k], conarray) == True:
+            if self.__class__.__check(tecdict[k], conarrayorg) == True:
                 url = 'https://www.italki.com/teacher/'+str(k)+'/'
                 if unseen == True and url in history:
                     continue
                 urlarray.append(url)
                 
         return urlarray
-    
-    """
-    def get_urlarray(self, conarray, unseen=False):
-        urlarray = self.__class__.__loopfunc(1, self.__get_urlarray, conarray, unseen)
-        return urlarray
-    """
         
 def itfunc():
     langarray = ['english', 'japanese', 'spanish']
@@ -315,15 +285,15 @@ def itfunc():
         it.collect()
         
         from git_push import git_push
-        git_push([it.fileindex.get_tecdictfile()])
+        git_push([it.fileindex.get_jsonpath()])
         
     for lang in langarray:
         it = Italki(lang)
         
         from os.path import exists
         from os import remove
-        if exists(it.fileindex.get_logfile()):
-            remove(it.fileindex.get_logfile())
+        if exists(it.get_logpath()):
+            remove(it.get_logpath())
             
 if __name__ == '__main__':
     """
