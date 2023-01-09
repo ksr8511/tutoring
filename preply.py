@@ -4,9 +4,10 @@ class Preply(Tutoring):
     """"""
     pf = 'preply'
     
-    def __init__(self, language, pagenumber):
+    """def __init__(self, language, pagenumber):"""
+    def __init__(self, language):
         self.language = language
-        self.pagenumber = pagenumber
+        self.pagenumber = self.__class__.__get_pagenumber(language)
         """self.fileindex = self.__class__.FileIndex(self.language[0:2])"""
         """self.fileindex = self.__class__.FileIndex(self.language)"""
         """self.fileindex = self.__class__.FileIndex('preply', self.language)"""
@@ -19,6 +20,16 @@ class Preply(Tutoring):
     def __get_pf(cls):
         return 'preply'
     """
+    
+    @classmethod
+    def __get_pagenumber(cls, lang):
+        if lang == 'english':
+            return 1300
+        elif lang == 'japanese':
+            return 100
+        elif lang == 'spanish':
+            return 500
+        return 0
         
     @classmethod
     def get_countrypath(cls):
@@ -344,13 +355,15 @@ def get_tzname(tutor):
     return tzname
     
 def prfunc():
-    langarray = [['english', 1300], ['japanese', 100], ['spanish', 500]]
+    """langarray = [['english', 1300], ['japanese', 100], ['spanish', 500]]"""
+    langarray = ['english', 'japanese', 'spanish']
     for lang in langarray:
         """
         pr = Preply(lang[0])
         pr.collect(lang[1])
         """
-        pr = Preply(lang[0], lang[1])
+        """pr = Preply(lang[0], lang[1])"""
+        pr = Preply(lang)
         pr.collect()
         
         from git_push import git_push
