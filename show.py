@@ -58,6 +58,8 @@ def show_country_id(country_idarray, srcarray=[Preply, Italki], langarray=['engl
                 """urlarray += tutoring.get_urlarray([['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'EG', True], ['origin_country_id', 'ZA', False]], unseen=True)"""
                 """urlarray += __loopfunc(1, tutoring.get_urlarray, [['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'EG', True], ['origin_country_id', 'ZA', False]], unseen=True)"""
                 urlarray += tutoring.get_urlarray([['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'EG', True], ['origin_country_id', 'ZA', False]], unseen=True)
+            elif country_id == 'GR':
+                urlarray += tutoring.get_urlarray([['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'UA', False], ['origin_country_id', 'ZA', False]], unseen=True)
             else:
                 """urlarray += tutoring.get_urlarray([['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'ZA', False]], unseen=True)"""
                 """urlarray += __loopfunc(1, tutoring.get_urlarray, [['living_country_id', country_id], ['origin_country_id', 'PH', False], ['origin_country_id', 'ZA', False]], unseen=True)"""
