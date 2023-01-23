@@ -51,7 +51,7 @@ def __get_countrydict():
     
     return countrydict
     
-def __get__prdict():
+def __get_prdict():
     import json
     
     prdict = dict()
@@ -117,9 +117,16 @@ def arrange():
     f.close()
     
     orgarray = list(set(orgarray))
+    """
+    print('len(orgarray):', len(orgarray))
+    print('orgarray[0]:', orgarray[0])
+    print(set([len(x) for x in orgarray]))
+    """
             
     dstarray = list()
     for history in orgarray:
+        if len(history) <= 0:
+            continue
         if not(history[-1] == '/'):
             print(history)
         itpre = 'https://www.italki.com/teacher/'
