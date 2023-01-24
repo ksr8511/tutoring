@@ -1,31 +1,15 @@
 from tutoring import Tutoring
 
 class Italki(Tutoring):
-    """"""
     pf = 'italki'
     
     def __init__(self, language):
         self.language = language
-        """self.fileindex = self.__class__.FileIndex(self.language[0:2])"""
-        """self.fileindex = self.__class__.FileIndex(self.language)"""
-        """self.fileindex = self.__class__.FileIndex('italki', self.language)"""
-        """"""
         self.fileindex = self.__class__.FileIndex(self.__class__.pf, self.language)
-        """self.fileindex = self.__class__.FileIndex(self.__class__.__get_pf(), self.language)"""
-        
-    """
-    @classmethod
-    def __get_pf(cls):
-        return 'italki'
-    """
         
     def get_logpath(self):
-        """return self.__class__.__get_path('log.'+self.language[0:2]+'.pickle')"""
         from os.path import join
-        """return join('.', 'italki', 'log.'+self.language[0:2]+'.pickle')"""
-        """"""
         return join('.', self.__class__.pf, 'log.'+self.language[0:2]+'.pickle')
-        """return join('.', self.__class__.__get_pf(), 'log.'+self.language[0:2]+'.pickle')"""
         
     @classmethod
     def __get_tecdicttmp(cls, url):
@@ -124,13 +108,6 @@ class Italki(Tutoring):
         return keywordarray
         
     def collect(self):
-        """
-        def dump(file, mode, module, obj):
-            f = open(file, mode)
-            module.dump(obj, f)
-            f.close()
-        """
-                
         tecdictorg = dict()
         baseurl = 'https://www.italki.com/teachers/'+self.language
         log = [[baseurl, '', False]]
@@ -148,56 +125,53 @@ class Italki(Tutoring):
             log = pickle.load(f)
             f.close()
             
-        logiter = iter(log)
-        while True:
-            entry = next(logiter, None)
-            if entry is None:
-                break
-                
-            if entry[2]:
-                continue
-                
-            from time import sleep
-            sleep(1)
-            
-            tecdicttmp = self.__class__.__get_tecdicttmp(entry[0])
-            tecdictorg.update(tecdicttmp)
-            
-            if len(tecdicttmp) >= 20:
-                if entry[1] == '':
-                    urlcntyarray = self.__class__.__get_urlcntyarray(entry[0])
-                    log.extend([[urlcnty, 'cnty', False] for urlcnty in urlcntyarray])
-                elif entry[1] == 'cnty':
-                    urllpgrparray = self.__class__.__get_urllpgrparray(entry[0])
-                    log.extend([[urllpgrp, 'lpgrp', False] for urllpgrp in urllpgrparray])
-                elif entry[1] == 'lpgrp':
-                    urllparray = self.__class__.__get_urllparray(entry[0])
-                    log.extend([[urllp, 'lp', False] for urllp in urllparray])
-                elif entry[1] == 'lp':
-                    urlttarray = self.__class__.__get_urlttarray(entry[0])
-                    log.extend([[urltt, 'tt', False] for urltt in urlttarray])
-                elif entry[1] == 'tt':
-                    urlkeywordarray = self.__class__.__get_urlkeywordarray(entry[0])
-                    log.extend([[urlkeyword, 'keyword', False] for urlkeyword in urlkeywordarray])
+        try:
+            logiter = iter(log)
+            while True:
+                entry = next(logiter, None)
+                if entry is None:
+                    break
                     
-            entry[2] = True
-            
-            """
-
-            """
-            """jsonfile = open(self.fileindex.get_jsonorgpath(), 'w')"""
+                if entry[2]:
+                    continue
+                    
+                from time import sleep
+                sleep(1)
+                
+                tecdicttmp = self.__class__.__get_tecdicttmp(entry[0])
+                tecdictorg.update(tecdicttmp)
+                
+                if len(tecdicttmp) >= 20:
+                    if entry[1] == '':
+                        urlcntyarray = self.__class__.__get_urlcntyarray(entry[0])
+                        log.extend([[urlcnty, 'cnty', False] for urlcnty in urlcntyarray])
+                    elif entry[1] == 'cnty':
+                        urllpgrparray = self.__class__.__get_urllpgrparray(entry[0])
+                        log.extend([[urllpgrp, 'lpgrp', False] for urllpgrp in urllpgrparray])
+                    elif entry[1] == 'lpgrp':
+                        urllparray = self.__class__.__get_urllparray(entry[0])
+                        log.extend([[urllp, 'lp', False] for urllp in urllparray])
+                    elif entry[1] == 'lp':
+                        urlttarray = self.__class__.__get_urlttarray(entry[0])
+                        log.extend([[urltt, 'tt', False] for urltt in urlttarray])
+                    elif entry[1] == 'tt':
+                        urlkeywordarray = self.__class__.__get_urlkeywordarray(entry[0])
+                        log.extend([[urlkeyword, 'keyword', False] for urlkeyword in urlkeywordarray])
+                        
+                entry[2] = True
+        except Exception as err:
+            print(err)
+        except KeyboardInterrupt as err:
+            """print(err)"""
+            raise KeyboardInterrupt
+        finally:
             jsonfile = self.__class__.loopfunc(1, open, self.fileindex.get_jsonorgpath(), 'w')
             json.dump(tecdictorg, jsonfile)
             jsonfile.close()
-            """self.__class__.loopfunc(1, dump, self.fileindex.get_jsonorgpath(), 'w', json, tecdictorg)"""
-            """
 
-            """
-            """logfile = open(self.get_logpath(), 'wb')"""
             logfile = self.__class__.loopfunc(1, open, self.get_logpath(), 'wb')
             pickle.dump(log, logfile)
             logfile.close()
-            """self.__class__.loopfunc(1, dump, self.get_logpath(), 'wb', pickle, log)"""
             
         tecdict = dict()
         for k in tecdictorg.keys():
@@ -215,14 +189,9 @@ class Italki(Tutoring):
                 print(e)
             """
             
-        """
-
-        """
-        """tecdictfile = open(self.fileindex.get_jsonpath(), 'w')"""
         tecdictfile = self.__class__.loopfunc(1, open, self.fileindex.get_jsonpath(), 'w')
         json.dump(tecdict, tecdictfile)
         tecdictfile.close()
-        """self.__class__.loopfunc(1, dump, self.fileindex.get_jsonpath(), 'w', json, tecdict)"""
         print('len(tecdict.keys()):', len(tecdict.keys()))
         
     @classmethod
@@ -282,7 +251,10 @@ def itfunc():
     for lang in langarray:
         it = Italki(lang)
         
-        it.collect()
+        try:
+            it.collect()
+        except KeyboardInterrupt as err:
+            raise KeyboardInterrupt
         
         from git_push import git_push
         git_push([it.fileindex.get_jsonpath()])
