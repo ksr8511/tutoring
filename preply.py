@@ -4,16 +4,15 @@ class Preply(Tutoring):
     pf = 'preply'
     
     def __init__(self, language):
-        self.language = language
+        super().__init__(self.__class__.pf, language)
         self.pagenumber = self.__class__.__get_pagenumber(language)
-        self.fileindex = self.__class__.FileIndex(self.__class__.pf, self.language)
         
     @classmethod
     def __get_pagenumber(cls, lang):
         if lang == 'english':
-            return 1300
+            return 1400
         elif lang == 'japanese':
-            return 100
+            return 150
         elif lang == 'spanish':
             return 500
         return 0
@@ -21,25 +20,44 @@ class Preply(Tutoring):
     @classmethod
     def get_countrypath(cls):
         from os.path import join
-        return join('.', cls.pf, 'country.csv')
+        from pathlib import Path
+        return join(Path.home(), 'jupyter', 'tutoring', cls.pf, 'country.csv')
         
     @classmethod
     def get_historypath(cls):
         from os.path import join
-        return join('.', 'history.txt')
+        from pathlib import Path
+        return join(Path.home(), 'jupyter', 'tutoring', 'history.txt')
         
     @classmethod
     def load_tutorsdict(cls, jsonpath):
+        tutorsdict = dict()
+        
         import os.path
         if os.path.exists(jsonpath):
+            """
             import json
             f = open(jsonpath, 'r')
             tutorsdict = json.load(f)
             f.close()
-            
-            return tutorsdict
-                
-        return dict()
+            """
+            import json
+            from json import JSONDecodeError
+            f = None
+            try:
+                f = open(jsonpath, 'r')
+                tutorsdict = json.load(f)
+            except JSONDecodeError as e:
+                print(e)
+                raise JSONDecodeError(e)
+            except TypeError as e:
+                print(e)
+                raise TypeError(e)
+            finally:
+                if f is not None:
+                    f.close()
+                    
+        return tutorsdict
         
     def __get_urliter(self):
         for i in range(1, self.pagenumber):
@@ -50,6 +68,8 @@ class Preply(Tutoring):
             
     @classmethod
     def __json_tutorsdicttmp(cls, url):
+        tutorsdicttmp = dict()
+        
         for i in range(10):
             import requests
             response = cls.loopfunc(60, requests.get, url)
@@ -62,7 +82,7 @@ class Preply(Tutoring):
                 import json
                 soupjson = soup.find('script', id='__NEXT_DATA__', type='application/json')
                 
-                tutorsdicttmp = dict()
+                """tutorsdicttmp = dict()"""
                 try:
                     tutorsjson = json.loads(soupjson.string)['props']['pageProps']['ssrAllTutors']['tutors']
                     for tutor in tutorsjson:
@@ -72,24 +92,39 @@ class Preply(Tutoring):
                     from time import sleep
                     sleep(1)
                     continue
-
-                return tutorsdicttmp
+                    
+                """return tutorsdicttmp"""
+                break
 
             if i == (10-1):
-                print(response.status_code, url)
+                """print(response.status_code, url)"""
                 break
 
             else:
                 from time import sleep
                 sleep(1)
                 continue
-
-        return dict()
+                
+        print(response.status_code, url)
+        """return dict()"""
+        return tutorsdicttmp
         
     def collect(self):
+        """
         tutorsorgdict = self.__class__.load_tutorsdict(self.fileindex.get_jsonorgpath())
+        """
+        import json
+        from json import JSONDecodeError
+        tutorsorgdict = dict()
+        try:
+            tutorsorgdict = self.__class__.load_tutorsdict(self.fileindex.get_jsonorgpath())
+        except JSONDecodeError as e:
+            tutorsorgdict = self.__class__.load_tutorsdict(self.fileindex.get_jsonorgpath()+'.bak')
+        except TypeError as e:
+            tutorsorgdict = self.__class__.load_tutorsdict(self.fileindex.get_jsonorgpath()+'.bak')
+            
         tutorsdict = self.__class__.load_tutorsdict(self.fileindex.get_jsonpath())
-        
+            
         try:
             urliter = self.__get_urliter()
             for url in urliter:
@@ -98,16 +133,21 @@ class Preply(Tutoring):
 
                 tutorsorgdicttmp = self.__class__.__json_tutorsdicttmp(url)
                 tutorsorgdict.update(tutorsorgdicttmp)
+                
+                """break"""
         except Exception as err:
             print(err)
         except KeyboardInterrupt as err:
             """print(err)"""
             raise KeyboardInterrupt
         finally:
-            import json
+            """import json"""
             f = open(self.fileindex.get_jsonorgpath(), 'w')
             json.dump(tutorsorgdict, f)
             f.close()
+            fbak = open(self.fileindex.get_jsonorgpath()+'.bak', 'w')
+            json.dump(tutorsorgdict, fbak)
+            fbak.close()
 
         for k in tutorsorgdict.keys():
             try:
@@ -213,6 +253,9 @@ class Preply(Tutoring):
                 
         return urlarray
         
+    def remove_log(self):
+        """"""
+        
 def __get_alpha_2(countryname):
     import pycountry
 
@@ -274,25 +317,11 @@ def get_tzname(tutor):
             
     return tzname
     
-def prfunc():
-    langarray = ['english', 'japanese', 'spanish']
-    for lang in langarray:
-        pr = Preply(lang)
-        try:
-            pr.collect()
-        except KeyboardInterrupt as err:
-            raise KeyboardInterrupt
-        
-        from git_push import git_push
-        git_push([pr.fileindex.get_jsonpath()])
-        
-if __name__ == '__main__':
-    """
-    from history import arrange
-    
-    prfunc()
-    find_notexisting()
-    print(get_tzname('2720881'))
-    arrange()
-    """
-    
+"""
+from history import arrange
+
+prfunc()
+find_notexisting()
+print(get_tzname('2720881'))
+arrange()
+"""

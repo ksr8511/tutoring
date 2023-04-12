@@ -3,7 +3,9 @@ def git_push(parray):
         from git import Repo
 
         from os.path import join
-        PATH_OF_GIT_REPO = join('.', '.git')
+        from pathlib import Path
+        """PATH_OF_GIT_REPO = join('.', '.git')"""
+        PATH_OF_GIT_REPO = join(Path.home(), 'jupyter', 'tutoring', '.git')
         COMMIT_MESSAGE = 'tutoring'
         
         repo = Repo(PATH_OF_GIT_REPO)

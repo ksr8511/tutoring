@@ -4,18 +4,20 @@ class Italki(Tutoring):
     pf = 'italki'
     
     def __init__(self, language):
-        self.language = language
-        self.fileindex = self.__class__.FileIndex(self.__class__.pf, self.language)
+        super().__init__(self.__class__.pf, language)
         
     def get_logpath(self):
         from os.path import join
-        return join('.', self.__class__.pf, 'log.'+self.language[0:2]+'.pickle')
+        from pathlib import Path
+        return join(Path.home(), 'jupyter', 'tutoring', self.__class__.pf, 'log.'+self.language[0:2]+'.pickle')
         
     @classmethod
     def __get_tecdicttmp(cls, url):
         import requests
         response = cls.loopfunc(60, requests.get, url)
-                
+        
+        tmptecdict = dict()
+        
         if response.status_code == 200:
             from bs4 import BeautifulSoup
             html = response.text
@@ -23,7 +25,7 @@ class Italki(Tutoring):
             
             import json
             soupjson = soup.find('script', id='__NEXT_DATA__', type='application/json')
-            tmptecdict = dict()
+            """tmptecdict = dict()"""
             try:
                 tecjson = json.loads(soupjson.string)['props']['pageProps']['teachers']
                 for t in tecjson:
@@ -31,13 +33,17 @@ class Italki(Tutoring):
                     tmptecdict[userinfo['user_id']] = userinfo
             except KeyError as err:
                 print(err)
-                return dict()
+                """return dict()"""
                 
-            return tmptecdict
+            """return tmptecdict"""
+        """
         else:
             print(response.status_code, url)
+        """
             
-        return dict()
+        print(response.status_code, url)
+        """return dict()"""
+        return tmptecdict
         
     @classmethod
     def __get_urlcntyarray(cls, url):
@@ -113,13 +119,30 @@ class Italki(Tutoring):
         log = [[baseurl, '', False]]
         
         import json
+        from json import JSONDecodeError
         import pickle
         
         from os.path import exists
         if exists(self.fileindex.get_jsonorgpath()):
-            f = open(self.fileindex.get_jsonorgpath(), 'r')
-            tecdictorg = json.load(f)
-            f.close()
+            f = None
+            fbak = None
+            try:
+                f = open(self.fileindex.get_jsonorgpath(), 'r')
+                tecdictorg = json.load(f)
+            except JSONDecodeError as e:
+                print(e)
+                fbak = open(self.fileindex.get_jsonorgpath()+'.bak', 'r')
+                tecdictorg = json.load(fbak)
+            except TypeError as e:
+                print(e)
+                fbak = open(self.fileindex.get_jsonorgpath()+'.bak', 'r')
+                tecdictorg = json.load(fbak)
+            finally:
+                if f is not None:
+                    f.close()
+                if fbak is not None:
+                    fbak.close()
+                
         if exists(self.get_logpath()):
             f = open(self.get_logpath(), 'rb')
             log = pickle.load(f)
@@ -159,19 +182,25 @@ class Italki(Tutoring):
                         log.extend([[urlkeyword, 'keyword', False] for urlkeyword in urlkeywordarray])
                         
                 entry[2] = True
+                
+                """break"""
         except Exception as err:
             print(err)
-        except KeyboardInterrupt as err:
-            """print(err)"""
-            raise KeyboardInterrupt
         finally:
             jsonfile = self.__class__.loopfunc(1, open, self.fileindex.get_jsonorgpath(), 'w')
             json.dump(tecdictorg, jsonfile)
             jsonfile.close()
+            jsonfilebak = self.__class__.loopfunc(1, open, self.fileindex.get_jsonorgpath()+'.bak', 'w')
+            json.dump(tecdictorg, jsonfilebak)
+            jsonfilebak.close()
 
             logfile = self.__class__.loopfunc(1, open, self.get_logpath(), 'wb')
             pickle.dump(log, logfile)
             logfile.close()
+        """
+        except KeyboardInterrupt as err:
+            raise KeyboardInterrupt
+        """
             
         tecdict = dict()
         for k in tecdictorg.keys():
@@ -245,30 +274,9 @@ class Italki(Tutoring):
                 
         return urlarray
         
-def itfunc():
-    langarray = ['english', 'japanese', 'spanish']
-    
-    for lang in langarray:
-        it = Italki(lang)
-        
-        try:
-            it.collect()
-        except KeyboardInterrupt as err:
-            raise KeyboardInterrupt
-        
-        from git_push import git_push
-        git_push([it.fileindex.get_jsonpath()])
-        
-    for lang in langarray:
-        it = Italki(lang)
-        
+    def remove_log(self):
         from os.path import exists
         from os import remove
-        if exists(it.get_logpath()):
-            remove(it.get_logpath())
+        if exists(self.get_logpath()):
+            remove(self.get_logpath())
             
-if __name__ == '__main__':
-    """
-    itfunc()
-    """
-    
