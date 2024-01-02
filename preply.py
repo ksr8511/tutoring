@@ -277,7 +277,8 @@ def __get_alpha_2(countryname):
 
 def __print_country(tzname):
     from geopy.geocoders import Nominatim
-    geolocator = Nominatim(user_agent='geoapiExercises')
+    """geolocator = Nominatim(user_agent='geoapiExercises')"""
+    geolocator = Nominatim(user_agent='preply')
 
     cityname = tzname.split('/')[-1].replace('_', ' ')
     country = geolocator.geocode(cityname, language='en')
