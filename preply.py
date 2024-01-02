@@ -57,7 +57,14 @@ class Preply(Tutoring):
                 if f is not None:
                     f.close()
                     
-        return tutorsdict
+        x = 999.99
+        dst = dict()
+        for k in tutorsdict.keys():
+            if float(tutorsdict[k]['seoPrice']) < x:
+                dst[k] = tutorsdict[k]
+                    
+        """return tutorsdict"""
+        return dst
         
     def __get_urliter(self):
         for i in range(1, self.pagenumber):
@@ -164,6 +171,7 @@ class Preply(Tutoring):
                 tutorsdict.setdefault(k, dict())
                 tutorsdict[k]['tzname'] = tutorsorgdict[k]['user']['profile']['timezone']['tzname']
                 tutorsdict[k]['countryOfBirth'] = tutorsorgdict[k]['countryOfBirth']['name']
+                tutorsdict[k]['seoPrice'] = tutorsorgdict[k]['seoPrice']['value']
             except KeyError as e:
                 print(e)
 
